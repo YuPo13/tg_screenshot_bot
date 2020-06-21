@@ -1,17 +1,13 @@
 from flask import Flask, request
-from flask_sqlalchemy import SQLAlchemy
 import telegram
 from config import bot_token, URL
 import asyncio
 from pyppeteer import launch
 
-#fake line to commit
+
 app = Flask(__name__)
 TOKEN = bot_token
 bot = telegram.Bot(token=TOKEN)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
 
 
 async def make_screenshot(url):
