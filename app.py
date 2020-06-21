@@ -1,3 +1,4 @@
+import os
 from flask import Flask, request
 import telegram
 from config import bot_token, URL
@@ -79,4 +80,5 @@ def index():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=1025, threaded=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port, threaded=True, debug=True)
