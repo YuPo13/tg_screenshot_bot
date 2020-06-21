@@ -1,10 +1,6 @@
 from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
 import telegram
-import requests
-import numpy as np
-import cv2
-import pyautogui
 from config import bot_token, URL
 import asyncio
 from pyppeteer import launch
