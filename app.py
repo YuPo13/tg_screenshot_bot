@@ -10,7 +10,7 @@ bot = telegram.Bot(token=TOKEN)
 
 
 async def make_screenshot(url):
-    args = ['--no-sandbox','--disable-setuid-sandbox','--disable-dev-shm-usage','--single-process']
+    args = ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--single-process']
     browser = await launch(
         headless=True,
         args=args
@@ -56,7 +56,7 @@ def respond():
         #     warning_message = "You've used wrong url format. Please enter your url in format http://full_link or " \
         #                       "https://full_link"
         #     bot.send_message(chat_id=chat_id, text=warning_message, reply_to_message_id=msg_id)
-        asyncio.get_event_loop().run_until_complete(make_screenshot(url_requested[1], image))
+        asyncio.get_event_loop().run_until_complete(make_screenshot(url_requested[1]))
         bot.send_message(chat_id=chat_id, text="Screenshot made", reply_to_message_id=msg_id)
     #    bot.send_message(chat_id=chat_id, text=image, reply_to_message_id=msg_id)
         #bot.send_photo(chat_id=chat_id, photo=open('screen.png', 'rb'), reply_to_message_id=msg_id)
