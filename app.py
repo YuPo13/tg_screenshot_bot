@@ -1,13 +1,17 @@
-import os
 from flask import Flask, request
 import telegram
-from config import bot_token, URL
+from telegram.ext import Updater
+from config import TOKEN, URL, PORT
 import asyncio
 from pyppeteer import launch
 
 
 app = Flask(__name__)
-TOKEN = bot_token
+updater = Updater(TOKEN)
+updater.start_webhook(listen="0.0.0.0", port=PORT, url_path=TOKEN)
+updater.bot.set_webhook(URL + TOKEN)
+updater.idle()
+
 bot = telegram.Bot(token=TOKEN)
 
 
@@ -30,6 +34,7 @@ def respond():
     msg_id = update.message.message_id
     text = str(update.message.text.encode('utf-8').decode())
     print("Got message:", text)
+
     if text == "/start":
         bot_welcome = """
            Welcome to Screenshooting bot.
@@ -39,12 +44,13 @@ def respond():
            http://full_link or https://full_link
            """
         bot.send_message(chat_id=chat_id, text=bot_welcome, reply_to_message_id=msg_id)
+
     elif text.startswith("/show"):
         url_requested = text.split()
 
-        if len(url_requested) > 2:
-            warning_message = "You've typed too many entries. Please enter /start again and subsequently " \
-                              "use command /show your_url"
+        if len(url_requested) != 2:
+            warning_message = "There should be 2 entries with 1 blank space between them: 1) /show, 2) your_url. " \
+                              "Please enter /start again and subsequently use command /show your_url"
             bot.send_message(chat_id=chat_id, text=warning_message, reply_to_message_id=msg_id)
 
         elif not (url_requested[1].startswith("http://") or url_requested[1].startswith("https://")):
@@ -53,6 +59,7 @@ def respond():
             bot.send_message(chat_id=chat_id, text=warning_message, reply_to_message_id=msg_id)
 
         asyncio.get_event_loop().run_until_complete(make_screenshot(url_requested[1]))
+        bot.send_photo(chat_id=chat_id, photo=open('screen.png', 'rb'))
 
     else:
         unresolved_command = "There was a problem with the command you've used. " \
@@ -62,23 +69,10 @@ def respond():
     return "ok"
 
 
-# @app.route('/set_webhook', methods=['GET', 'POST'])
-# def set_webhook():
-#     """
-#     This function sets webhook
-#     """
-#     s = bot.setWebhook('{URL}{HOOK}'.format(URL=URL, HOOK=TOKEN))
-#     if s:
-#         return "webhook setup ok"
-#     else:
-#         return "webhook setup failed"
-
-
 @app.route('/', methods=['GET'])
 def index():
     return '.'
 
 
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port, threaded=True, debug=True)
+    app.run(port=PORT, host="0.0.0.0", threaded=True, debug=True)
