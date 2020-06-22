@@ -45,7 +45,7 @@ def respond():
            Welcome to Screenshooting bot.
            The bot obtains url from user and provides printscreen of requested page.
            Please use following command:
-           /show your_url - to obtain the screenshot of requested page, where your_url is the link to the site in format 
+           /show your_url - to obtain the screenshot of can telegram bot remember deployment toolrequested page, where your_url is the link to the site in format 
            http://full_link or https://full_link
            """
         bot.send_message(chat_id=chat_id, text=bot_welcome, reply_to_message_id=msg_id)
@@ -89,7 +89,7 @@ def set_webhook():
         return "webhook setup failed"
 
 
-@app.route('/')
+@app.route('/', methods=['GET'])
 def index():
     return '.'
 
