@@ -11,7 +11,15 @@ bot = telegram.Bot(token=TOKEN)
 
 
 async def make_screenshot(url):
-    browser = await launch(headless=True)
+    browser = await launch(
+        headless=True,
+        args= [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--single-process'
+        ]
+    )
     page = await browser.newPage()
 
     await page.goto(url)
