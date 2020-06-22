@@ -41,7 +41,6 @@ def respond():
 
     elif text.startswith("/show"):
         url_requested = text.split()
-
         if len(url_requested) != 2:
             warning_message = "There should be 2 entries with 1 blank space between them: 1) /show, 2) your_url. " \
                               "Please enter /start again and subsequently use command /show your_url"
@@ -51,7 +50,8 @@ def respond():
         #     warning_message = "You've used wrong url format. Please enter your url in format http://full_link or " \
         #                       "https://full_link"
         #     bot.send_message(chat_id=chat_id, text=warning_message, reply_to_message_id=msg_id)
-
+        confirmation = url_requested[1]
+        bot.send_message(chat_id=chat_id, text=confirmation, reply_to_message_id=msg_id)
         asyncio.get_event_loop().run_until_complete(make_screenshot(url_requested[1]))
         bot.send_photo(chat_id=chat_id, photo=open('screen.png', 'rb'))
 
