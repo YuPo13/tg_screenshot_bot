@@ -18,9 +18,10 @@ async def make_screenshot(url):
     page = await browser.newPage()
 
     await page.goto(url, timeout=3000)
-    await page.waitFor(3000)
-    return await page.screenshot({'fullPage': True})
-    # await browser.close()
+    # await page.waitFor(3000)
+    screenshot = await page.screenshot({'fullPage': True})
+    await browser.close()
+    return screenshot
 
 
 @app.route('/{}'.format(TOKEN), methods=['POST'])
@@ -45,7 +46,6 @@ def respond():
         bot.send_message(chat_id=chat_id, text=bot_welcome, reply_to_message_id=msg_id)
 
     elif text.startswith("/show"):
-        image = 0
         url_requested = text.split()
         if len(url_requested) != 2:
             warning_message = "There should be 2 entries with 1 blank space between them: 1) /show, 2) your_url. " \
