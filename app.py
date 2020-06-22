@@ -62,19 +62,19 @@ def respond():
     return "ok"
 
 
-@app.route('/set_webhook', methods=['GET', 'POST'])
-def set_webhook():
-    """
-    This function sets webhook
-    """
-    s = bot.setWebhook('{URL}{HOOK}'.format(URL=URL, HOOK=TOKEN))
-    if s:
-        return "webhook setup ok"
-    else:
-        return "webhook setup failed"
+# @app.route('/set_webhook', methods=['GET', 'POST'])
+# def set_webhook():
+#     """
+#     This function sets webhook
+#     """
+#     s = bot.setWebhook('{URL}{HOOK}'.format(URL=URL, HOOK=TOKEN))
+#     if s:
+#         return "webhook setup ok"
+#     else:
+#         return "webhook setup failed"
 
 
-@app.route('/')
+@app.route('/', methods=['GET'])
 def index():
     return '.'
 
