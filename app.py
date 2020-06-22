@@ -19,8 +19,8 @@ async def make_screenshot(url):
 
     await page.goto(url, timeout=3000)
     await page.waitFor(3000)
-    await page.screenshot({'path': 'screen.png', 'fullPage': True})
-    await browser.close()
+    return await page.screenshot({'fullPage': True})
+    # await browser.close()
 
 
 @app.route('/{}'.format(TOKEN), methods=['POST'])
