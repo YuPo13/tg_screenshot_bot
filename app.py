@@ -101,7 +101,7 @@ def set_webhook():
         return "webhook setup failed"
 
 
-@app.route('/', methods=['GET'])
+@app.route('/')
 def index():
     return '.'
 
