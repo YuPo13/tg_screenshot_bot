@@ -10,12 +10,12 @@ bot = telegram.Bot(token=TOKEN)
 
 
 
-async def make_screenshot(url, image):
+async def make_screenshot(url):
     browser = await launch(headless=True)
     page = await browser.newPage()
 
     await page.goto(url)
-    image = await page.screenshot({'path': 'screen.png', 'fullPage': True})
+    await page.screenshot({'path': 'screen.png', 'fullPage': True})
     await browser.close()
 
 
@@ -54,7 +54,7 @@ def respond():
         #     bot.send_message(chat_id=chat_id, text=warning_message, reply_to_message_id=msg_id)
         asyncio.get_event_loop().run_until_complete(make_screenshot(url_requested[1], image))
         bot.send_message(chat_id=chat_id, text="Screenshot made", reply_to_message_id=msg_id)
-        bot.send_message(chat_id=chat_id, text=image, reply_to_message_id=msg_id)
+    #    bot.send_message(chat_id=chat_id, text=image, reply_to_message_id=msg_id)
         #bot.send_photo(chat_id=chat_id, photo=open('screen.png', 'rb'), reply_to_message_id=msg_id)
 
     else:
