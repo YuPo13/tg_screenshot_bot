@@ -9,9 +9,8 @@ app = Flask(__name__)
 bot = telegram.Bot(token=TOKEN)
 
 
-
 async def make_screenshot(url):
-    args = ('--no-sandbox','--disable-setuid-sandbox','--disable-dev-shm-usage','--single-process')
+    args = ['--no-sandbox','--disable-setuid-sandbox','--disable-dev-shm-usage','--single-process']
     browser = await launch(
         headless=True,
         args=args
@@ -19,7 +18,7 @@ async def make_screenshot(url):
     page = await browser.newPage()
 
     await page.goto(url, timeout=3000)
-    await page.waitFor(timeout=3000)
+    await page.waitFor(3000)
     await page.screenshot({'path': 'screen.png', 'fullPage': True})
     await browser.close()
 
