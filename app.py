@@ -89,9 +89,9 @@ def set_webhook():
         return "webhook setup failed"
 
 
-@app.route('/', methods=['GET', 'POST'])
-def index():
-    return '.'
+#@app.route('/', methods=['GET', 'POST'])
+#def index():
+#    return '.'
 
 
 # make_screenshot("https://gotoshop.ua/uk/kiev/shops/114-prospekt-lisovijj-9/")
