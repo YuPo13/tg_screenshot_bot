@@ -3,7 +3,6 @@ import telegram
 from config import TOKEN, URL, PORT
 import asyncio
 from pyppeteer import launch
-import time
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
@@ -33,15 +32,15 @@ def make_screenshot(url):
 
     driver = webdriver.Chrome(ChromeDriverManager().install(), chrome_options=chrome_options)
     driver.get(url)
-    time.sleep(2)
 
     original_size = driver.get_window_size()
     required_width = driver.execute_script('return document.body.parentNode.scrollWidth')
     required_height = driver.execute_script('return document.body.parentNode.scrollHeight')
     driver.set_window_size(required_width, required_height)
     screenshot_name = "screenshot.png"
-    driver.find_element_by_tag_name("body").screenshot(screenshot_name)
+    screenshot = driver.find_element_by_tag_name("body").screenshot(screenshot_name)
     driver.quit()
+    return screenshot
 
 
 @app.route('/{}'.format(TOKEN), methods=['POST'])
@@ -69,7 +68,7 @@ def respond():
         url_requested = text.split()
         if len(url_requested) != 2:
             warning_message = "There should be 2 entries with 1 blank space between them: 1) /show, 2) your_url. " \
-                              "Please enter /start again and subsequently use command /show your_url"
+                              "Please use command /show your_url"
             bot.send_message(chat_id=chat_id, text=warning_message, reply_to_message_id=msg_id)
 
         # elif not url_requested[1].startswith("http://") or not url_requested[1].startswith("https://"):
