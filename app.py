@@ -1,17 +1,11 @@
 from flask import Flask, request
 import telegram
-from telegram.ext import Updater
 from config import TOKEN, URL, PORT
 import asyncio
 from pyppeteer import launch
 
 
 app = Flask(__name__)
-updater = Updater(TOKEN)
-updater.start_webhook(listen="0.0.0.0", port=PORT, url_path=TOKEN)
-updater.bot.set_webhook(URL + TOKEN)
-updater.idle()
-
 bot = telegram.Bot(token=TOKEN)
 
 
@@ -67,6 +61,18 @@ def respond():
         bot.send_message(chat_id=chat_id, text=unresolved_command, reply_to_message_id=msg_id)
 
     return "ok"
+
+
+@app.route('/set_webhook', methods=['GET', 'POST'])
+def set_webhook():
+    """
+    This function sets webhook
+    """
+    s = bot.setWebhook('{URL}{HOOK}'.format(URL=URL, HOOK=TOKEN))
+    if s:
+        return "webhook setup ok"
+    else:
+        return "webhook setup failed"
 
 
 @app.route('/', methods=['GET'])
