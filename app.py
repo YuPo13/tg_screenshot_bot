@@ -3,25 +3,45 @@ import telegram
 from config import TOKEN, URL, PORT
 import asyncio
 from pyppeteer import launch
-
+import time
+from selenium import webdriver
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.options import Options
 
 app = Flask(__name__)
 bot = telegram.Bot(token=TOKEN)
 
 
-async def make_screenshot(url):
-    args = ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--single-process']
-    browser = await launch(
-        headless=True,
-        args=args
-    )
-    page = await browser.newPage()
+# async def make_screenshot(url):
+#     args = ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--single-process']
+#     browser = await launch(
+#         headless=True,
+#         args=args
+#     )
+#     page = await browser.newPage()
+#
+#     await page.goto(url, timeout=3000)
+#     # await page.waitFor(3000)
+#     screenshot = await page.screenshot({'fullPage': True})
+#     await browser.close()
+#     return screenshot
 
-    await page.goto(url, timeout=3000)
-    # await page.waitFor(3000)
-    screenshot = await page.screenshot({'fullPage': True})
-    await browser.close()
-    return screenshot
+def make_screenshot(url):
+    chrome_options = Options()
+    chrome_options.add_argument('--headless')
+    chrome_options.add_argument('--start-maximized')
+
+    driver = webdriver.Chrome(ChromeDriverManager().install(), chrome_options=chrome_options)
+    driver.get(url)
+    time.sleep(2)
+
+    original_size = driver.get_window_size()
+    required_width = driver.execute_script('return document.body.parentNode.scrollWidth')
+    required_height = driver.execute_script('return document.body.parentNode.scrollHeight')
+    driver.set_window_size(required_width, required_height)
+    screenshot_name = "screenshot.png"
+    driver.find_element_by_tag_name("body").screenshot(screenshot_name)
+    driver.quit()
 
 
 @app.route('/{}'.format(TOKEN), methods=['POST'])
@@ -56,7 +76,8 @@ def respond():
         #     warning_message = "You've used wrong url format. Please enter your url in format http://full_link or " \
         #                       "https://full_link"
         #     bot.send_message(chat_id=chat_id, text=warning_message, reply_to_message_id=msg_id)
-        asyncio.get_event_loop().run_until_complete(make_screenshot(url_requested[1]))
+        # asyncio.get_event_loop().run_until_complete(make_screenshot(url_requested[1]))
+        make_screenshot(url_requested[1])
         bot.send_message(chat_id=chat_id, text="Screenshot made", reply_to_message_id=msg_id)
     #    bot.send_message(chat_id=chat_id, text=image, reply_to_message_id=msg_id)
         #bot.send_photo(chat_id=chat_id, photo=open('screen.png', 'rb'), reply_to_message_id=msg_id)
