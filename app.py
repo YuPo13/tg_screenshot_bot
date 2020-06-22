@@ -1,9 +1,7 @@
 from flask import Flask, request
 import telegram
-from config import TOKEN, URL, PORT
-import asyncio
-from pyppeteer import launch
 import time
+from config import TOKEN, URL, PORT
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
@@ -12,20 +10,6 @@ app = Flask(__name__)
 bot = telegram.Bot(token=TOKEN)
 
 
-# async def make_screenshot(url):
-#     args = ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--single-process']
-#     browser = await launch(
-#         headless=True,
-#         args=args
-#     )
-#     page = await browser.newPage()
-#
-#     await page.goto(url, timeout=3000)
-#     # await page.waitFor(3000)
-#     screenshot = await page.screenshot({'fullPage': True})
-#     await browser.close()
-#     return screenshot
-
 def make_screenshot(url):
     chrome_options = Options()
     chrome_options.add_argument('--headless')
@@ -33,14 +17,16 @@ def make_screenshot(url):
 
     driver = webdriver.Chrome(ChromeDriverManager().install(), chrome_options=chrome_options)
     driver.get(url)
-    time.sleep(2)
+    time.sleep(5)
     original_size = driver.get_window_size()
     required_width = driver.execute_script('return document.body.parentNode.scrollWidth')
     required_height = driver.execute_script('return document.body.parentNode.scrollHeight')
     driver.set_window_size(required_width, required_height)
     screenshot_name = "screenshot.png"
-    driver.find_element_by_tag_name("body").screenshot(screenshot_name)
+    screenshot = driver.find_element_by_tag_name("body").screenshot(screenshot_name)
+
     driver.quit()
+    return screenshot
 
 
 @app.route('/{}'.format(TOKEN), methods=['POST'])
@@ -52,7 +38,6 @@ def respond():
     chat_id = update.message.chat_id
     msg_id = update.message.message_id
     text = str(update.message.text.encode('utf-8').decode())
-    print("Got message:", text)
 
     if text == "/start":
         bot_welcome = """
@@ -68,23 +53,25 @@ def respond():
         url_requested = text.split()
         if len(url_requested) != 2:
             warning_message = "There should be 2 entries with 1 blank space between them: 1) /show, 2) your_url. " \
-                              "Please enter /start again and subsequently use command /show your_url"
+                              "Please use command /show your_url"
             bot.send_message(chat_id=chat_id, text=warning_message, reply_to_message_id=msg_id)
+            return "Wrong entry"
 
-        # elif not url_requested[1].startswith("http://") or not url_requested[1].startswith("https://"):
-        #     warning_message = "You've used wrong url format. Please enter your url in format http://full_link or " \
-        #                       "https://full_link"
-        #     bot.send_message(chat_id=chat_id, text=warning_message, reply_to_message_id=msg_id)
-        # asyncio.get_event_loop().run_until_complete(make_screenshot(url_requested[1]))
-        make_screenshot(url_requested[1])
-        bot.send_message(chat_id=chat_id, text="Screenshot made", reply_to_message_id=msg_id)
-    #    bot.send_message(chat_id=chat_id, text=image, reply_to_message_id=msg_id)
-        #bot.send_photo(chat_id=chat_id, photo=open('screen.png', 'rb'), reply_to_message_id=msg_id)
+        elif not url_requested[1].startswith("http://") or not url_requested[1].startswith("https://"):
+            warning_message = "You've used wrong url format. Please enter your url in format http://full_link or " \
+                              "https://full_link"
+            bot.send_message(chat_id=chat_id, text=warning_message, reply_to_message_id=msg_id)
+            return "Wrong entry"
+
+        else:
+            make_screenshot(url_requested[1])
+            bot.send_photo(chat_id=chat_id, photo=open('screenshot.png', 'rb'), reply_to_message_id=msg_id)
 
     else:
         unresolved_command = "There was a problem with the command you've used. " \
                              "Please enter /start to get info on commands available"
         bot.send_message(chat_id=chat_id, text=unresolved_command, reply_to_message_id=msg_id)
+        return "Wrong entry"
 
     return "ok"
 
@@ -101,10 +88,12 @@ def set_webhook():
         return "webhook setup failed"
 
 
-@app.route('/', methods=['GET'])
+@app.route('/')
 def index():
     return '.'
 
+
+# make_screenshot("https://gotoshop.ua/uk/kiev/shops/114-prospekt-lisovijj-9/")
 
 if __name__ == '__main__':
     app.run(port=PORT, host="0.0.0.0", threaded=True, debug=True)
