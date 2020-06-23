@@ -30,7 +30,7 @@ def make_screenshot(url):
     return screenshot
 
 
-@app.route('/{}'.format(TOKEN), methods=['GET', 'POST'])
+@app.route('/{}'.format(TOKEN), methods=['POST'])
 def respond():
     """
     This function describes the behaviour of telegram bot according to request sent by user
