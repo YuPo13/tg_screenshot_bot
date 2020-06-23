@@ -30,7 +30,7 @@ def make_screenshot(url):
     return screenshot
 
 
-@app.route('/{}'.format(TOKEN), methods=['POST'])
+@app.route('/{}'.format(TOKEN), methods=['GET', 'POST'])
 def respond():
     """
     This function describes the behaviour of telegram bot according to request sent by user
@@ -89,7 +89,7 @@ def set_webhook():
         return "webhook setup failed"
 
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/')
 def index():
     return '.'
 
