@@ -1,7 +1,7 @@
 from flask import Flask, request
 import telegram
 import time
-from config import TOKEN, URL, PORT
+from venv.env import TOKEN, URL, PORT
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
